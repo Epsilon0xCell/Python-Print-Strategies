@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!-- pages-campaign site for Epsilon0xCell/Python-Print-Strategies; source of truth: Python-Print-Strategies-Website/ on the default branch -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python-Print-Strategies - a print cookbook</title>
+<style>
+  /* I laid this out as a cookbook because print.py is already a set of small recipes in a fixed order. Each recipe gets the code, then the plate it produces. The order on the page is the order in the file, for the same reason the file keeps its order: the order is the lesson. */
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f3e2c7; color: #33241a; font-family: Georgia, serif; line-height: 1.6; }
+  .book { max-width: 820px; margin: 0 auto; padding: 34px 22px 52px; }
+  .spine { border-top: 8px solid #9c3d1e; padding-top: 18px; }
+  h1 { font-size: 38px; margin: 0 0 4px; line-height: 1.1; }
+  .oneline { font-size: 17px; color: #6b4a2f; margin: 0 0 16px; }
+  .hero img { width: 100%; height: auto; display: block; border: 2px solid #33241a; }
+  .hero figcaption { font-size: 13px; color: #6b4a2f; margin-top: 6px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 22px; }
+  .badges img { height: 20px; }
+  h2 { font-size: 22px; margin: 36px 0 6px; border-bottom: 2px dashed #9c3d1e; padding-bottom: 5px; }
+  .recipe { background: #fffaf0; border: 1px solid #c8a97a; border-left: 6px solid #9c3d1e; padding: 16px 18px; margin: 16px 0; }
+  .recipe h3 { margin: 0 0 6px; font-size: 17px; }
+  .recipe h3 .no { color: #9c3d1e; font-family: ui-monospace, Menlo, monospace; }
+  pre { background: #2b1d14; color: #ffd9a0; padding: 12px 14px; overflow-x: auto; font-family: ui-monospace, Menlo, monospace; font-size: 14px; line-height: 1.5; margin: 8px 0; }
+  .serves { font-family: ui-monospace, Menlo, monospace; font-size: 14px; background: #f7ecd4; border: 1px dashed #9c3d1e; padding: 8px 12px; margin: 8px 0 4px; white-space: pre-wrap; }
+  .serves strong { color: #9c3d1e; }
+  .full-run { background: #2b1d14; color: #eaf0d8; }
+  .chips { list-style: none; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+  .chips li { border: 1px solid #33241a; background: #fffaf0; padding: 3px 12px; font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+  .logo-small { width: 58px; height: 58px; float: right; margin: 2px 0 8px 14px; border: 1px solid #33241a; background: #fff; padding: 3px; }
+  a { color: #9c3d1e; }
+  footer { margin-top: 44px; border-top: 8px solid #9c3d1e; padding-top: 10px; font-size: 13px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<main class="book">
+  <div class="spine">
+    <h1>Python-Print-Strategies</h1>
+    <p class="oneline">Basic python print statement strategies</p>
+  </div>
+
+  <figure class="hero">
+    <img src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/banner.png" alt="Python-Print-Strategies banner">
+    <figcaption>banner.png from this repo, on main. Every output below is from running print.py myself while building this page.</figcaption>
+  </figure>
+
+  <div class="badges">
+    <img src="https://img.shields.io/github/stars/Epsilon0xCell/Python-Print-Strategies" alt="Stars">
+    <img src="https://img.shields.io/github/forks/Epsilon0xCell/Python-Print-Strategies" alt="Forks">
+    <img src="https://img.shields.io/github/last-commit/Epsilon0xCell/Python-Print-Strategies" alt="Last commit">
+    <img src="https://img.shields.io/github/languages/top/Epsilon0xCell/Python-Print-Strategies" alt="Top language">
+    <img src="https://img.shields.io/github/repo-size/Epsilon0xCell/Python-Print-Strategies" alt="Repo size">
+    <img src="https://img.shields.io/github/license/Epsilon0xCell/Python-Print-Strategies" alt="License">
+  </div>
+
+  <h2>What this is</h2>
+  <img class="logo-small" src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/logo.png" alt="Python-Print-Strategies logo">
+  <p>I wrote <code>print.py</code> as a sequence of small, independent demonstrations, and I keep the order fixed because the order is the lesson. Each block shows one behaviour on its own. The script takes no input, defines no functions, and writes no file. It only prints.</p>
+  <p>This page follows the file recipe by recipe, in file order: a variable, a string, numbers, several values in one call, then the two same line forms, then comments. The last section is about comments themselves, so there the comments are the content, not notes about printing.</p>
+  <p>Run the whole book at once from the repo root:</p>
+  <pre>python3 print.py</pre>
+
+  <h2>The recipes</h2>
+
+  <div class="recipe">
+    <h3><span class="no">1.</span> Print a variable</h3>
+    <pre>data = "Fun secret variable"
+print(data)</pre>
+    <p class="serves"><strong>Produces:</strong> Fun secret variable</p>
+    <p>I start with a variable on purpose. Printing the variable prints the value it holds, not the name I gave it. That difference is the first thing a new reader trips on.</p>
+  </div>
+
+  <div class="recipe">
+    <h3><span class="no">2.</span> Print a string</h3>
+    <pre>print("Hello World")</pre>
+    <p class="serves"><strong>Produces:</strong> Hello World</p>
+    <p>No variable, no setup. The string goes in, the string comes out, and print adds the newline at the end.</p>
+  </div>
+
+  <div class="recipe">
+    <h3><span class="no">3.</span> Print numbers</h3>
+    <pre>print(50)
+print(1000)
+print(3.142)</pre>
+    <p class="serves"><strong>Produces:</strong> 50
+1000
+3.142</p>
+    <p>Two integers and a float, each on its own line because each call ends its own line. No quotes are needed, and none are printed.</p>
+  </div>
+
+  <div class="recipe">
+    <h3><span class="no">4.</span> Print several values in one call</h3>
+    <pre>print(50, 1000, 3.142, "Hello World") # Comma separation</pre>
+    <p class="serves"><strong>Produces:</strong> 50 1000 3.142 Hello World</p>
+    <p>I pass four values in one call and let the commas do the work. Print puts exactly one space between values on its own, so I do not need spaces inside the strings. The note after the code is an end of line comment: the interpreter ignores it, the reader does not have to.</p>
+  </div>
+
+  <div class="recipe">
+    <h3><span class="no">5.</span> Stay on the same line with end=""</h3>
+    <pre>print("Hello", end="")
+print("World")</pre>
+    <p class="serves"><strong>Produces:</strong> HelloWorld</p>
+    <p>Here <code>end=""</code> replaces the newline with nothing, so the next print continues right where this one stopped and the two words run together. This pair only makes sense against the default it overrides: print ends the line unless I tell it not to.</p>
+  </div>
+
+  <div class="recipe">
+    <h3><span class="no">6.</span> Stay on the same line with end=" "</h3>
+    <pre>print("Hello", end=" ")
+print("World")</pre>
+    <p class="serves"><strong>Produces:</strong> Hello World</p>
+    <p>Same move, one character different. With <code>end=" "</code> I leave exactly one space instead of nothing, which is the only difference between this recipe and the one before it. Put side by side, the pair shows what <code>end</code> actually controls.</p>
+  </div>
+
+  <div class="recipe">
+    <h3><span class="no">7.</span> Comments, three ways</h3>
+    <pre>print(50)  # This line prints 50
+print("Hello World")  # This line prints Hello World
+
+# This is just a comment hanging out on its own!
+
+# For multi-line comments, we must
+# add the hashtag symbol
+# each time
+
+"""Docstrings are pretty cool
+for writing longer comments
+or notes about the code"""</pre>
+    <p class="serves"><strong>Produces:</strong> 50
+Hello World
+(the comments and the docstring block print nothing)</p>
+    <p>End of line comments explain a single line. Standalone comment lines stand on their own. A multi line comment in this file is just a hashtag on each line. The last block needs care: it looks like a comment, but it is really a string, a docstring used as a comment block. It only reads as documentation because it sits as a bare expression that nothing uses.</p>
+  </div>
+
+  <h2>The full run, in order</h2>
+  <!-- I pasted this from a real run of print.py on this machine, not from memory of the README. If the file changes, this block is the first thing on the page that will be wrong, and I want it to be easy to spot. -->
+  <pre class="full-run">Fun secret variable
+Hello World
+50
+1000
+3.142
+50 1000 3.142 Hello World
+HelloWorld
+Hello World
+50
+Hello World</pre>
+  <p>Exit code 0. That transcript is the same output order the Wave 5 README rewrite recorded, checked again here.</p>
+  <ul class="chips"><li>Python</li><li>print()</li><li>end parameter</li></ul>
+  <p><a href="https://github.com/Epsilon0xCell/Python-Print-Strategies">Read Python-Print-Strategies on GitHub</a> &middot; <a href="https://github.com/Epsilon0xCell">Epsilon0xCell on GitHub</a></p>
+
+  <footer><span>Built by Epsilon0xCell</span><span>Tested by cooking every recipe on this page.</span></footer>
+</main>
+</body>
+</html>
