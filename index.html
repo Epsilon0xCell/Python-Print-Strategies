@@ -1,280 +1,104 @@
 <!DOCTYPE html>
-<!-- pages-campaign site for Epsilon0xCell/Python-Print-Strategies; source of truth: Python-Print-Strategies-Website/ on the default branch -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Python-Print-Strategies: The Print Shop Proof Sheet</title>
-<script>document.documentElement.classList.add('js');</script>
+<title>Python-Print-Strategies: the tally board from the packing hall</title>
+<meta name="description" content="print.py prints a fixed list of lines in a fixed order. The tally board walks every row in file order: variable, single values, four values on one line, the end pair, and the comments at the end.">
 <style>
-  /* I set this page as a proof sheet because print.py already works like one: a row of separate impressions, each struck from a few lines of type and checked against the line it leaves. So the page gets registration marks, crop corners, and proof numbers in the margin instead of boxes in a grid. */
-  * { box-sizing: border-box; }
-  html { background: #e8e2d2; }
-  body { margin: 0; color: #16130e; font-family: Georgia, 'Times New Roman', serif; line-height: 1.55; }
-  a { color: #a31616; }
-  code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.92em; }
-  .sheet { position: relative; max-width: 1060px; margin: 26px auto 40px 4vw; background: #faf6ec; border: 1px solid #16130e; padding: 44px 46px 30px 74px; box-shadow: 10px 12px 0 rgba(22,19,14,0.18); }
-  .reg { position: absolute; color: #a31616; font-family: ui-monospace, Menlo, monospace; font-size: 15px; line-height: 1; user-select: none; }
-  .reg.tl { top: 10px; left: 12px; } .reg.tr { top: 10px; right: 12px; }
-  .reg.bl { bottom: 10px; left: 12px; } .reg.br { bottom: 10px; right: 12px; }
-  .rail { position: absolute; top: 0; bottom: 0; left: 52px; width: 0; border-left: 1px solid rgba(163,22,22,0.45); }
-  .crop { position: absolute; width: 22px; height: 22px; border-color: #16130e; border-style: solid; border-width: 0; }
-  .crop.a { top: -1px; left: -1px; border-top-width: 2px; border-left-width: 2px; }
-  .crop.b { top: -1px; right: -1px; border-top-width: 2px; border-right-width: 2px; }
-  .crop.c { bottom: -1px; left: -1px; border-bottom-width: 2px; border-left-width: 2px; }
-  .crop.d { bottom: -1px; right: -1px; border-bottom-width: 2px; border-right-width: 2px; }
-  .kicker { font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #a31616; margin: 0 0 6px; }
-  /* I wanted the title set like poster type, big enough that it reads as struck type and not as a web heading. */
-  h1 { font-size: clamp(44px, 8.5vw, 96px); line-height: 0.95; margin: 0 0 4px; text-transform: uppercase; letter-spacing: -1px; font-weight: 900; }
-  h1 .red { color: #a31616; }
-  .sub { font-size: clamp(19px, 2.6vw, 27px); font-style: italic; margin: 0 0 18px; max-width: 34em; }
-  .rule { border: 0; border-top: 4px solid #16130e; margin: 18px 0 0; }
-  .rule.thin { border-top-width: 1px; margin-top: 3px; }
-  .hero { margin: 20px 0 6px -30px; }
-  .hero img { width: 100%; height: auto; display: block; border: 2px solid #16130e; }
-  figcaption { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: #4c463a; margin-top: 6px; }
-  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 4px; }
-  .badges img { height: 20px; }
-  .ticket { display: flex; flex-wrap: wrap; gap: 0; border: 2px solid #16130e; margin: 22px 0 8px; font-family: ui-monospace, Menlo, monospace; font-size: 13.5px; background: #fffdf6; }
-  .ticket div { padding: 9px 14px; border-right: 1px dashed #16130e; }
-  .ticket div:last-child { border-right: 0; }
-  .ticket b { color: #a31616; font-weight: 700; }
-  h2 { font-size: 30px; text-transform: uppercase; letter-spacing: 0.5px; margin: 40px 0 8px; line-height: 1.1; }
-  h2 .no { color: #a31616; font-family: ui-monospace, Menlo, monospace; font-size: 20px; vertical-align: 4px; margin-right: 8px; }
-  p { max-width: 44em; }
-  .runbox { background: #16130e; color: #f3ecd9; padding: 14px 18px; font-family: ui-monospace, Menlo, monospace; font-size: 15px; overflow-x: auto; max-width: 640px; }
-  /* Each proof hangs at a different offset and width because no two blocks in print.py do the same job, and a uniform stack would hide that. The red number in the margin is my proofreader tick: proof, lines, verdict. */
-  .proof { position: relative; margin: 34px 0; padding: 18px 20px 14px; border-top: 3px solid #16130e; background: #fffdf6; }
-  .proof .pno { position: absolute; left: -64px; top: 14px; width: 48px; text-align: right; font-family: ui-monospace, Menlo, monospace; color: #a31616; font-size: 13px; line-height: 1.3; }
-  .proof .pno b { display: block; font-size: 26px; }
-  .proof h3 { margin: 0 0 2px; font-size: 21px; line-height: 1.2; }
-  .proof .lines { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: #4c463a; margin: 0 0 10px; }
-  .proof pre.code { background: #16130e; color: #ffd98a; margin: 0 0 10px; padding: 12px 14px; font-family: ui-monospace, Menlo, monospace; font-size: 14px; line-height: 1.55; overflow-x: auto; white-space: pre; }
-  .proof .struck { border: 1px solid #16130e; border-left: 6px solid #a31616; padding: 9px 14px; margin: 0 0 10px; background: #faf6ec; }
-  .proof .struck .lab { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; letter-spacing: 2px; text-transform: uppercase; color: #a31616; display: block; margin-bottom: 3px; }
-  .proof pre.out { margin: 0; font-family: ui-monospace, Menlo, monospace; font-size: 16px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .proof p.note { margin: 0; font-size: 15.5px; }
-  .w1 { max-width: 620px; } .w2 { max-width: 700px; margin-left: 7%; } .w3 { max-width: 560px; margin-left: 16%; }
-  .w4 { max-width: 760px; } .w5 { max-width: 540px; margin-left: 10%; } .w6 { max-width: 540px; margin-left: 22%; }
-  .w7 { max-width: 680px; margin-left: 4%; } .w8 { max-width: 720px; }
-  /* I only hide proofs when the script is running, so a reader with no JavaScript gets every proof complete on the page. The script adds the js class in the head before anything renders. */
-  .js .proof { opacity: 0; transform: translateY(16px); }
-  .js .proof.struck-in { opacity: 1; transform: translateY(0); transition: opacity 0.45s ease, transform 0.45s ease; }
-  .fullrun { background: #16130e; color: #e9f0d2; padding: 16px 18px; font-family: ui-monospace, Menlo, monospace; font-size: 15px; line-height: 1.6; overflow-x: auto; white-space: pre; max-width: 680px; margin-left: 6%; }
-  .sheets { margin-top: 10px; }
-  .sheets figure { margin: 26px 0; }
-  .sheets figure:nth-child(odd) { margin-right: 12%; }
-  .sheets figure:nth-child(even) { margin-left: 12%; }
-  .sheets img { width: 100%; height: auto; display: block; border: 1px solid #16130e; background: #fff; transition: transform 0.25s ease; }
-  /* A small lift on hover is the only idle gesture I kept. It tells a reader the sheet can be picked up and looked at, and it never runs on its own behind text. */
-  .sheets figure:hover img { transform: translateY(-3px); }
-  .duo { display: flex; gap: 22px; align-items: flex-start; flex-wrap: wrap; }
-  .duo img.logo { width: 190px; height: auto; border: 2px solid #16130e; background: #fff; padding: 6px; }
-  .colophon { font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: #4c463a; }
-  footer { margin-top: 46px; border-top: 4px solid #16130e; padding-top: 10px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 14px; }
-  @media (max-width: 720px) {
-    .sheet { margin: 12px 8px 24px; padding: 30px 18px 22px 30px; }
-    .rail { left: 20px; } .hero { margin-left: 0; }
-    .proof .pno { position: static; width: auto; text-align: left; margin-bottom: 6px; }
-    .proof .pno b { display: inline; font-size: 18px; margin-right: 6px; }
-    .w2, .w3, .w5, .w6, .w7, .fullrun { margin-left: 0; }
-    .sheets figure:nth-child(odd), .sheets figure:nth-child(even) { margin-left: 0; margin-right: 0; }
-  }
-  /* When a reader asks for less motion I give them the finished sheet: every proof complete and still, no lift, no fade. */
-  @media (prefers-reduced-motion: reduce) {
-    .js .proof { opacity: 1; transform: none; }
-    .js .proof.struck-in { transition: none; }
-    .sheets img { transition: none; }
-    .sheets figure:hover img { transform: none; }
-  }
+@font-face{font-family:'Anaheim';src:url('fonts/Anaheim.ttf') format('truetype')}
+@font-face{font-family:'Cabin';src:url('fonts/Cabin.ttf') format('truetype')}
+*{box-sizing:border-box}
+body{margin:0;background:#1a1b1e;color:#26241f;font-family:'Cabin',sans-serif;line-height:1.6}
+.board{max-width:960px;margin:26px auto 44px;background:#d8c094;padding:0 40px 30px;box-shadow:10px 12px 0 rgba(0,0,0,.35)}
+.hero{margin:0 -40px}
+.hero img{width:100%;height:230px;object-fit:cover;object-position:50% 82%;display:block}
+h1{font-family:'Anaheim',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:2.3rem;margin:.7em 0 .15em;color:#1a1b1e}
+.lede{max-width:64ch}
+.lid{display:inline-block;background:#b9bcbe;color:#1a1b1e;font-family:'Anaheim',sans-serif;text-transform:uppercase;letter-spacing:.05em;text-decoration:none;padding:.5em 1.1em;border-bottom:3px solid #34603e;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);margin:.2em .4em .2em 0}
+.lid:hover{background:linear-gradient(100deg,#b9bcbe 30%,#e8eaea 50%,#b9bcbe 70%)}
+.lid:active{transform:translateY(2px);border-bottom-color:#223f29}
+.lid:focus-visible{outline:3px solid #c42c24;outline-offset:2px}
+table{width:100%;border-collapse:collapse;margin:22px 0}
+th{font-family:'Anaheim',sans-serif;text-transform:uppercase;text-align:left;font-size:.85rem;letter-spacing:.08em;border-bottom:3px solid #34603e;padding:6px 10px}
+td{padding:12px 10px;border-bottom:1px solid #b49b6c;vertical-align:top}
+tr:nth-child(even) td{background:#e2cfa4}
+td.r{font-weight:700;white-space:nowrap}
+td pre{margin:0;font-family:Menlo,Consolas,monospace;font-size:.86rem;white-space:pre-wrap}
+.key{display:inline-block;transform:rotate(90deg);color:#34603e;font-weight:700;margin-right:.3em}
+tr.active td{box-shadow:inset 3px 0 0 #c42c24}
+.pair{display:flex;gap:18px;flex-wrap:wrap}
+.pair .cell{flex:1 1 220px;background:#e2cfa4;border:1px solid #b49b6c;padding:12px 16px}
+.pair .res{color:#c42c24;font-weight:700;font-size:1.25rem}
+.belt{border:0;border-top:3px solid #1a1b1e;position:relative;margin:34px 0 8px}
+.belt::after{content:'';position:absolute;left:50%;top:-10px;width:26px;height:18px;margin-left:-13px;border:2px solid #1a1b1e;background:#d8c094}
+.crate{background:#e2cfa4;border-top:10px solid #b49b6c;padding:14px 20px 6px;margin:20px 0;position:relative}
+.crate::before,.crate::after{content:'';position:absolute;top:2px;width:6px;height:6px;border-radius:50%;background:#1a1b1e}
+.crate::before{left:8px}.crate::after{right:8px}
+h2{font-family:'Anaheim',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-size:1.4rem}
+pre.code{background:#1a1b1e;color:#efe8d2;padding:14px 18px;overflow-x:auto;font-family:Menlo,Consolas,monospace;font-size:.88rem}
+footer{border-top:3px solid #34603e;margin-top:30px;padding-top:12px;font-size:.92rem}
+a.k{color:#34603e;text-decoration:none}
+a.k::before{content:'T';display:inline-block;transform:rotate(90deg);color:#34603e;font-weight:700;margin-right:.35em;transition:transform .2s}
+a.k:hover::before{transform:rotate(180deg)}
+a.k:hover{text-decoration:underline}
+@media(max-width:640px){.board{padding:0 18px 24px}.hero{margin:0 -18px}td.r{white-space:normal}}
 </style>
 </head>
 <body>
-<main class="sheet">
-  <span class="reg tl">+</span><span class="reg tr">+</span><span class="reg bl">+</span><span class="reg br">+</span>
-  <span class="crop a"></span><span class="crop b"></span><span class="crop c"></span><span class="crop d"></span>
-  <div class="rail" aria-hidden="true"></div>
-  <p class="kicker">Proof sheet, job: print.py</p>
-  <h1>Python<br>Print <span class="red">Strategies</span></h1>
-  <p class="sub">Every way one small file puts words and numbers on the page, struck one proof at a time and checked against the run.</p>
-  <hr class="rule"><hr class="rule thin">
-  <figure class="hero">
-    <img src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/banner.png" alt="Python-Print-Strategies banner">
-    <figcaption>banner.png from the repo root, on main. I checked every proof below against a fresh run of print.py before this sheet went up.</figcaption>
-  </figure>
-  <div class="badges">
-    <img src="https://img.shields.io/github/stars/Epsilon0xCell/Python-Print-Strategies" alt="Stars">
-    <img src="https://img.shields.io/github/forks/Epsilon0xCell/Python-Print-Strategies" alt="Forks">
-    <img src="https://img.shields.io/github/last-commit/Epsilon0xCell/Python-Print-Strategies" alt="Last commit">
-    <img src="https://img.shields.io/github/languages/top/Epsilon0xCell/Python-Print-Strategies" alt="Top language">
-    <img src="https://img.shields.io/github/repo-size/Epsilon0xCell/Python-Print-Strategies" alt="Repo size">
-    <img src="https://img.shields.io/github/license/Epsilon0xCell/Python-Print-Strategies" alt="License">
-  </div>
-  <div class="ticket" aria-label="Job ticket">
-    <div><b>File</b> print.py</div>
-    <div><b>Length</b> 53 lines</div>
-    <div><b>Run</b> python3 print.py</div>
-    <div><b>Output</b> 10 lines, exit code 0</div>
-    <div><b>Imports</b> none</div>
-    <div><b>Functions defined</b> none</div>
-    <div><b>Input taken</b> none</div>
-  </div>
-  <h2><span class="no">Sec. 1</span>What this is</h2>
-  <div class="duo">
-    <div>
-      <p>I wrote <code>print.py</code> as a sequence of small, independent demonstrations, and I keep the order fixed because the order is the lesson. Each block shows one behaviour on its own. The script contains no input, no functions, and no output file. It only prints.</p>
-      <p>I set this page as a press proof sheet because that is the closest match for the file itself. Each strategy gets struck as its own proof: the code that set it, the exact line it printed under a red rule, and my note on what the proof shows. The last proof prints nothing at all, on purpose, because the end of the file is about comments.</p>
-      <p>Run the whole sheet at once from the repo root:</p>
-      <p class="runbox">python3 print.py</p>
-    </div>
-    <img class="logo" src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/logo.png" alt="Python-Print-Strategies logo">
-  </div>
-  <h2><span class="no">Sec. 2</span>The proofs, in file order</h2>
-  <p>Proofs strike in one by one as you read down the sheet, the way impressions come off a press. Each one settles once and then stays still. The output under each code block is the output of that block on its own, word for word, including where a line ends and where it does not.</p>
-  <section class="proof w1">
-    <p class="pno"><b>1</b>OK</p>
-    <h3>Print a variable</h3>
-    <p class="lines">print.py lines 10 to 11</p>
-    <pre class="code">data = "Fun secret variable"
-print(data)</pre>
-    <div class="struck"><span class="lab">Struck line</span><pre class="out" data-proof="1">Fun secret variable</pre></div>
-    <p class="note">I start with a variable on purpose. Printing the variable prints the value it holds, not the name I gave it, and that difference is the first thing a new reader trips on.</p>
-  </section>
-  <section class="proof w2">
-    <p class="pno"><b>2</b>OK</p>
-    <h3>Print a string</h3>
-    <p class="lines">print.py line 12</p>
-    <pre class="code">print("Hello World")</pre>
-    <div class="struck"><span class="lab">Struck line</span><pre class="out" data-proof="2">Hello World</pre></div>
-    <p class="note">No variable, no setup. The string goes in, the string comes out, and print adds the newline at the end on its own.</p>
-  </section>
-  <section class="proof w3">
-    <p class="pno"><b>3</b>OK</p>
-    <h3>Print numbers</h3>
-    <p class="lines">print.py lines 13 to 15</p>
-    <pre class="code">print(50)
-print(1000)
-print(3.142)</pre>
-    <div class="struck"><span class="lab">Struck lines</span><pre class="out" data-proof="3">50
-1000
-3.142</pre></div>
-    <p class="note">Two integers and a float, each on its own line because each call ends its own line. No quotes are needed around the numbers, and none are printed.</p>
-  </section>
-  <section class="proof w4">
-    <p class="pno"><b>4</b>OK</p>
-    <h3>Print several values in one call</h3>
-    <p class="lines">print.py line 19</p>
-    <pre class="code">print(50, 1000, 3.142, "Hello World") # Comma separation</pre>
-    <div class="struck"><span class="lab">Struck line</span><pre class="out" data-proof="4">50 1000 3.142 Hello World</pre></div>
-    <p class="note">I pass these four values in one call and let the commas do the work: print puts exactly one space between values on its own, so I do not need to add spaces inside the strings myself. The words after the code on that line are an end of line comment. The interpreter ignores them.</p>
-  </section>
-  <section class="proof w5">
-    <p class="pno"><b>5</b>OK</p>
-    <h3>Stay on the same line, end=""</h3>
-    <p class="lines">print.py lines 26 to 27</p>
-    <pre class="code">print("Hello", end="")
-print("World")</pre>
-    <div class="struck"><span class="lab">Struck line, no space in it</span><pre class="out" data-proof="5">HelloWorld</pre></div>
-    <p class="note">I use <code>end=""</code> here to replace the newline entirely, so the next print continues right where this one stopped and the two words run together. This proof only makes sense against the default it overrides: print ends the line unless I tell it not to.</p>
-  </section>
-  <section class="proof w6">
-    <p class="pno"><b>6</b>OK</p>
-    <h3>Stay on the same line, end=" "</h3>
-    <p class="lines">print.py lines 29 to 30</p>
-    <pre class="code">print("Hello", end=" ")
-print("World")</pre>
-    <div class="struck"><span class="lab">Struck line, one space in it</span><pre class="out" data-proof="6">Hello World</pre></div>
-    <p class="note">Same move, one character different. With <code>end=" "</code> I leave exactly one space instead of nothing, which is the only difference between this proof and the one before it. Put side by side, the pair shows what <code>end</code> actually controls.</p>
-  </section>
-  <section class="proof w7">
-    <p class="pno"><b>7</b>OK</p>
-    <h3>End of line comments</h3>
-    <p class="lines">print.py lines 32 to 33</p>
-    <pre class="code">print(50)  # This line prints 50
-print("Hello World")  # This line prints Hello World</pre>
-    <div class="struck"><span class="lab">Struck lines</span><pre class="out" data-proof="7">50
-Hello World</pre></div>
-    <p class="note">Each comment sits after the code it explains, on the same line. The printed output is the same as if the comments were not there. They are for the reader, not for the run.</p>
-  </section>
-  <section class="proof w8">
-    <p class="pno"><b>8</b>OK</p>
-    <h3>Comments that print nothing</h3>
-    <p class="lines">print.py lines 40 to 44, and lines 51 to 53</p>
-    <pre class="code"># This is just a comment hanging out on its own!
+<div class="board">
+<header class="hero">
+<img src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/intro-banner.png" alt="The cannery between shifts: a stopped belt, one open tin half filled, steam leaving the retort">
+</header>
+<h1>Python-Print-Strategies</h1>
+<p class="lede">The tally board from the packing hall, ruled into rows. <code>print.py</code> is a teaching script that shows how the Python print call behaves. It asks for nothing, it reads no file, it only prints, and it runs with <code>python3 print.py</code>. Every row below is one thing the file prints, in the order the file prints it, checked against a fresh run: ten lines of output, exit code 0.</p>
+<p><a class="lid" href="#rows">The rows</a> <a class="lid" href="#comments">Comments</a> <a class="lid" href="https://github.com/Epsilon0xCell/Python-Print-Strategies">Repository</a></p>
 
-# For multi-line comments, we must
+<hr class="belt">
+<h2 id="rows">The rows, in file order</h2>
+<table>
+<tr><th>Row</th><th>Result</th><th>The call</th><th>Forewoman's note</th></tr>
+<tr><td><span class="key">T</span>1</td><td class="r">Fun secret variable</td><td><pre>data = "Fun secret variable"
+print(data)</pre></td><td>The variable first, on purpose. Printing the variable prints the sentence it holds, not the word data.</td></tr>
+<tr><td><span class="key">T</span>2</td><td class="r">Hello World</td><td><pre>print("Hello World")</pre></td><td>A single value on its own line. Words first.</td></tr>
+<tr><td><span class="key">T</span>3</td><td class="r">50</td><td><pre>print(50)</pre></td><td>A number on its own line, treated exactly like the words.</td></tr>
+<tr><td><span class="key">T</span>4</td><td class="r">1000</td><td><pre>print(1000)</pre></td><td>Same station, bigger number. The call does not change.</td></tr>
+<tr><td><span class="key">T</span>5</td><td class="r">3.142</td><td><pre>print(3.142)</pre></td><td>A decimal this time. Still one value, still one line.</td></tr>
+<tr><td><span class="key">T</span>6</td><td class="r">50 1000 3.142 Hello World</td><td><pre>print(50, 1000, 3.142, "Hello World")</pre></td><td>Four values in one call, landing on a single line with one space between each, because the commas in the call do that by themselves.</td></tr>
+</table>
+
+<h2>Rows seven and eight: the pair the file exists for</h2>
+<div class="pair">
+<div class="cell"><p><span class="key">T</span>Row 7</p><pre>print("Hello", end="")
+print("World")</pre><p class="res">HelloWorld</p><p>End set to an empty string, so World runs straight onto Hello. No space, no new line.</p></div>
+<div class="cell"><p><span class="key">T</span>Row 8</p><pre>print("Hello", end=" ")
+print("World")</pre><p class="res">Hello World</p><p>The same pair with end set to one space, so the words land spaced properly. One character is the whole difference.</p></div>
+</div>
+
+<table>
+<tr><td><span class="key">T</span>9</td><td class="r">50<br>Hello World</td><td><pre>print(50)  # This line prints 50
+print("Hello World")  # This line prints Hello World</pre></td><td>The closing lines: the two values printed again, each with a comment after it explaining the line. The comments change nothing in the output.</td></tr>
+</table>
+
+<hr class="belt">
+<h2 id="comments">Comments, as the file teaches them</h2>
+<div class="crate">
+<p>A lone hash comment sits on its own line and the interpreter skips it:</p>
+<pre class="code"># This is just a comment hanging out on its own!</pre>
+<p>Longer notes repeat the hash at the start of every line:</p>
+<pre class="code"># For multi-line comments, we must
 # add the hashtag symbol
 # each time</pre>
-    <pre class="code">"""Docstrings are pretty cool
+<p>And the triple quoted block at the end of the file is shown for what it is, a string sitting unused, not a true comment:</p>
+<pre class="code">"""Docstrings are pretty cool
 for writing longer comments
 or notes about the code"""</pre>
-    <div class="struck"><span class="lab">Struck line</span><pre class="out" data-proof="8">(nothing printed)</pre></div>
-    <p class="note">The rest of the file is about comments themselves, so here the comments are the content I am demonstrating, not notes about the printing above. Everything on a line after the hashtag is ignored when the file runs. The last block needs care from me: it looks like a comment, but it is really a string. It only reads as documentation because it sits here as a bare expression that nothing uses.</p>
-  </section>
-  <h2><span class="no">Sec. 3</span>The full run, in order</h2>
-  <!-- I keep the full run on the sheet for the same reason a press keeps the final proof: if print.py changes, this block is the first thing on the page that will be wrong, and I want that easy to spot. -->
-  <pre class="fullrun" id="fullrun">Fun secret variable
-Hello World
-50
-1000
-3.142
-50 1000 3.142 Hello World
-HelloWorld
-Hello World
-50
-Hello World</pre>
-  <p>Ten lines, in that order, exit code 0, nothing on standard error. Proofs 5 and 6 are the pair to watch in this run: <code>HelloWorld</code> with no space, then <code>Hello World</code> with one space, back to back.</p>
-  <h2><span class="no">Sec. 4</span>The visual sheets</h2>
-  <p>These sheets live in <code>Python-Print-Strategies-Visuals/</code> in this repo. <code>VISUAL.md</code> in that folder describes five sheets. The folder holds six PNG files, so I show all six here and caption what is actually in the folder. The sixth sheet is <code>schematic.png</code>.</p>
-  <div class="sheets">
-    <figure>
-      <img src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/Python-Print-Strategies-Visuals/architecture.png" alt="Architecture sheet for Python-Print-Strategies">
-      <figcaption>Sheet 1 of 6, architecture.png: the put together view, biggest file at the top, from Python-Print-Strategies-Visuals.</figcaption>
-    </figure>
-    <figure>
-      <img src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/Python-Print-Strategies-Visuals/flowchart.png" alt="Flowchart sheet for Python-Print-Strategies">
-      <figcaption>Sheet 2 of 6, flowchart.png: the run, from the entry file through the steps the code takes, from Python-Print-Strategies-Visuals.</figcaption>
-    </figure>
-    <figure>
-      <img src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/Python-Print-Strategies-Visuals/product-map.png" alt="Product map sheet for Python-Print-Strategies">
-      <figcaption>Sheet 3 of 6, product-map.png: what the project is for, what goes in, what comes out, and where it stops, from Python-Print-Strategies-Visuals.</figcaption>
-    </figure>
-    <figure>
-      <img src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/Python-Print-Strategies-Visuals/data-flow.png" alt="Data flow sheet for Python-Print-Strategies">
-      <figcaption>Sheet 4 of 6, data-flow.png: the data path in one direction, file to result, from Python-Print-Strategies-Visuals.</figcaption>
-    </figure>
-    <figure>
-      <img src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/Python-Print-Strategies-Visuals/schematic.png" alt="Schematic sheet for Python-Print-Strategies">
-      <figcaption>Sheet 5 of 6, schematic.png: the schematic sheet in the folder. VISUAL.md does not list this one, and it is in the folder, so it is on the sheet.</figcaption>
-    </figure>
-    <figure>
-      <img src="https://raw.githubusercontent.com/Epsilon0xCell/Python-Print-Strategies/main/Python-Print-Strategies-Visuals/statistics.png" alt="Statistics sheet for Python-Print-Strategies">
-      <figcaption>Sheet 6 of 6, statistics.png: the counts for this repo, drawn as bars, from Python-Print-Strategies-Visuals.</figcaption>
-    </figure>
-  </div>
-  <p class="colophon">Colophon: set by hand in system type only, Georgia for the specimen lines and a monospace stack for the code. Ink black and one press red. No framework, no outside script. Proofs checked at head 66314d3 of print.py.</p>
-  <p><a href="https://github.com/Epsilon0xCell/Python-Print-Strategies">Read Python-Print-Strategies on GitHub</a> &middot; <a href="https://github.com/Epsilon0xCell">Epsilon0xCell on GitHub</a></p>
-  <footer><span>Built by Epsilon0xCell</span><span>Proofed line by line against the run.</span></footer>
-</main>
-<script>
-  // I strike each proof once as it reaches the reader, like an impression coming off the press, and then I leave it alone. A proof that keeps moving would fight the reading, and this page is for reading.
-  (function () {
-    var proofs = document.querySelectorAll('.proof');
-    var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (calm || !('IntersectionObserver' in window)) {
-      proofs.forEach(function (p) { p.classList.add('struck-in'); });
-      return;
-    }
-    var press = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('struck-in');
-          press.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.25 });
-    proofs.forEach(function (p) { press.observe(p); });
-  })();
-</script>
+<p>The script contains no input, no functions, and no output file. The sheets in <a class="k" href="https://github.com/Epsilon0xCell/Python-Print-Strategies/tree/main/Python-Print-Strategies-Visuals">the visuals folder</a> belong to the same repo.</p>
+</div>
+
+<footer>
+<p>Foot rail of the board: repository, <a class="k" href="https://github.com/Epsilon0xCell/Python-Print-Strategies">github.com/Epsilon0xCell/Python-Print-Strategies</a>; owner, <a class="k" href="https://github.com/Epsilon0xCell">Epsilon0xCell</a>; licence, GNU General Public License v3, in <code>LICENSE</code>. Fonts: Anaheim and Cabin, both SIL Open Font License 1.1, license texts beside the font files.</p>
+</footer>
+</div>
 </body>
 </html>
