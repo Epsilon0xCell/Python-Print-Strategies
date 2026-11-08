@@ -1,9 +1,11 @@
-![Intro: the cannery between shifts, a stopped belt, one open tin half filled, steam leaving the retort](intro-banner.png)
+![Intro: the top of the teletype sheet where the first lines sit fresh and dark, the print head resting at the newest line, a red margin line running down the left of the paper](intro-banner.png)
 
 
 # Python-Print-Strategies
 
-![Banner](banner.png)
+<p align="center"><img src="logo.png" alt="Python-Print-Strategies logo: a green grey teletype machine drawn straight on, a white sheet rising from its carriage with plain dark line marks down it" width="200"></p>
+
+![Banner: a teletype machine on a desk in a dim room, its long paper sheet unfurled down the front and across the desk, covered in neat rows of fine line marks with a red margin line down the sheet](banner.png)
 
 ![Scene: the hall in cross section, tins riding the belt to the lid press, steam rising, reflections moving on the wet floor](scene.svg)
 
